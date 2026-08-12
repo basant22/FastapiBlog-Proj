@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %} Blogs {% endblock %}
+{% block content %}
+   <!-- <p><strong>Logged in as:</strong> {{ user.email }}</p>
+        <p><strong>User ID:</strong> {{ user.id }}</p> -->
+    <div class="blog-container">
+        <!-- <div class="user-section">
+            <h2> welcome {{user.fullname}} </h2>
+            <p><strong>Loged in as </strong>{{user.email}}</p>
+        </div>
+        <br> -->
+     
+            {% if blogs and blogs | length > 0 %}
+               <h2>This is your created blogs</h2> 
+            <div class="blog-grid">
+                {% for blog in blogs %}
+                {% if blog and blog.heading and blog.title %}
+                <div class="card-blog">
+                    {% if blog and blog.image_url %}
+                    <img class="blog-image" src="{{blog.image_url}}">
+                    {% else %}
+                    <div class="noimage">No image</div>
+                    {% endif %}
+                    <div class="card-content">
+                            <h4 class="blog-heading">{{blog.heading}}</h4>
+                            <p class="blog-title">{{blog.title}}</p>
+                            {% if blog.created_at %}
+                            <small class="blog-date">{{ blog.created_at.strftime('%B %d, %Y') }}</small>
+                            {% endif %}
+                    </div>
+                    <div class="card-actions">
+                        <!-- <a class="read-btn" >read more</a> -->
+                        
+                        <button class="delete-btn">Delete</button>
+                        <button clas="edit-btn">Edit</button>
+                    </div>
+                
+                
+                </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-blog">
+            <p>You have not created any blog yet,Create your first blog</p>
+            <a href="/create-blog">Create blog</a>
+        </div>
+        {% endif %}
+        </div>
+{% endblock %}

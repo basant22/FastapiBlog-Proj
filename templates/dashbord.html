@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %} Dashboard {% endblock %}
+{% block content %}
+<div class="container">
+        <h1>Welcome to Your Dashboard! 🎉</h1>
+        <p><strong>Logged in as:</strong> {{ user.email }}</p>
+        <p><strong>User ID:</strong> {{ user.id }}</p>
+        <hr />
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+{% endblock %}

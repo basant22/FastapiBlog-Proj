@@ -1,0 +1,101 @@
+from datetime import datetime, timedelta
+from typing import Optional
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from fastapi import HTTPException, status, Depends
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from database import sessionlocal
+from dbmodel import User
+from dotenv import load_dotenv
+from config import setting
+# Security configuration
+SECRET_KEY = setting.secretkey
+ALGORITHM = setting.algoritham
+ACCESS_TOKEN_EXPIRE_MINUTES = int(setting.expireinminutes)
+REFRESH_TOKEN_EXPIRE_DAYS = int(setting.expireindays)
+
+
+def my_db():
+    db = sessionlocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def authenticate_user(db: Session, username: str, password: str):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now() + expires_delta
+    else:
+        expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({
+        "exp": expire,
+        "type":'access'
+        })
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now() + expires_delta
+    else:
+        expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({
+        "exp": expire,
+        "type":'refresh'
+        })
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(my_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print('payload',payload)
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        expTime:datetime= payload.get('exp')
+        if expTime < datetime.now():
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    user = db.query(User).filter(User.username == username).first()
+    if user is None:
+        raise credentials_exception
+    return user
+def get_current_user_from_cookie(request: Request, db: Session = Depends(my_db)) -> Optional[User]:
+    token = request.cookies.get("access_token")
+    print("Token from current User",token)
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print("payload",payload)
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+        return db.query(dbmodel.User).filter(dbmodel.User.email == email).first()
+    except jwt.PyJWTError:
+        return None

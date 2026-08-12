@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- {% block title %} Main {% endblock %} -->
+    <link rel="stylesheet" href="/static/style.css?v={{ timestamp }}" />
+  </head>
+  <body>
+    <div id="main">
+      <div class="header">
+        <div class="leftmenu">
+          <h4>Welcome {{user.fullname}}</h4>
+          <p>{{user.email}}</p>
+        </div>
+        <div class="rightmenu">
+          <img src="/static/images/close_eye.png" />
+          <a href="/blogs" class="menur">Blogs</a>
+          <a href="/create-blog" class="menur">Create-Blog</a>
+          <a href="" class="menur">Profile</a>
+          <a href="/logout" class="menur">Logout</a>
+        </div>
+      </div>
+      <div class="fake-header"></div>
+      <div class="content">{% block content %}{% endblock %}</div>
+    </div>
+  </body>
+</html>

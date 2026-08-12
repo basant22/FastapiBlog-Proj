@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+  
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; }
+        input { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 0.6rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .error { color: red; margin-bottom: 1rem; font-size: 0.9rem; }
+        .password{display: flex;justify-content: space-between; align-items: center;}
+        .eye{width: 20px; height: 20px; margin-left: 5px;}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Register</h2>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form id="registerForm" action="/register" method="POST">
+            <div class="form-group">
+                <label>User Name</label>
+                <input type="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required />
+            </div>
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="mobilenumber" name="mobilenumber" required>
+            </div>
+          
+            <div class="form-group">
+                <label>Password</label>
+                <div class="password">
+                    <input type="password" id ="password" name="password" required />
+                    <img onclick="togglePassword()" id="closeicon" class="eye" src="/static/images/close_eye.png">
+                </div>
+            </div>
+             <div class="form-group">
+                <label>Confirm Password</label>
+                <div class="password">
+                    <input type="password" id="confirmpassword" name="confirmpassword" required />
+                    <img  onclick="confirmTogglePassword()" id="openicon" class="eye" src="/static/images/close_eye.png">
+                </div>
+            </div>
+            <button type="submit">Create Account</button>
+        </form>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            Already have an account? <a href="/login">Login here</a>
+        </p>
+         <!-- Debug Information -->
+    <div id="debugInfo" class="debug-info">
+        <h4>Debug Information:</h4>
+        <div id="debugContent"></div>
+    </div>
+    </div>
+    <script src="/static/javascript/register/register.js"></script>
+     <script>
+        // Debug: Log form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            console.log('Form submitted!');
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = key.includes('password') ? '***' : value;
+            }
+            console.log('Form data:', data);
+            
+            // Show debug info
+            const debugInfo = document.getElementById('debugInfo');
+            const debugContent = document.getElementById('debugContent');
+            debugContent.innerHTML = `
+                <p><strong>Form Action:</strong> ${this.action}</p>
+                <p><strong>Form Method:</strong> ${this.method}</p>
+                <p><strong>Data:</strong> ${JSON.stringify(data, null, 2)}</p>
+                <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+            `;
+            debugInfo.classList.add('show');
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+        });
+        
+        // Check for errors from server
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const success = urlParams.get('success');
+        
+        if (error) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = decodeURIComponent(error);
+            errorDiv.classList.add('show');
+        }
+        
+        if (success) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = decodeURIComponent(success);
+            successDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>
