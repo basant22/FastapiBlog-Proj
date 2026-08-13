@@ -85,17 +85,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
-def get_current_user_from_cookie(request: Request, db: Session = Depends(my_db)) -> Optional[User]:
-    token = request.cookies.get("access_token")
-    print("Token from current User",token)
-    if not token:
-        return None
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        print("payload",payload)
-        email: str = payload.get("sub")
-        if email is None:
-            return None
-        return db.query(dbmodel.User).filter(dbmodel.User.email == email).first()
-    except jwt.PyJWTError:
-        return None
+# def get_current_user_from_cookie(request: Request, db: Session = Depends(my_db)) -> Optional[User]:
+#     token = request.cookies.get("access_token")
+#     print("Token from current User",token)
+#     if not token:
+#         return None
+#     try:
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         print("payload",payload)
+#         email: str = payload.get("sub")
+#         if email is None:
+#             return None
+#         return db.query(dbmodel.User).filter(dbmodel.User.email == email).first()
+#     except jwt.PyJWTError:
+#         return None
