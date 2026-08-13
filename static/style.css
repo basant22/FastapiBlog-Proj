@@ -336,10 +336,29 @@ h2 {
         text-decoration: none;
         font-size: 13px;
         border: none;
-        cursor: pointer;
-        transition: all 0.3s;
+        /* cursor: pointer; */
+        /* transition: all 0.3s; */
         font-weight: 500;
         margin-bottom: 2px;
+    }
+    
+
+    .edit-btnn {
+        background-color: #0056b3;
+        color: #fff;
+    }
+
+    .edit-btnn:hover {
+        background-color: #145298;
+    }
+
+     .delete-btn {
+        background-color: #dc3545;
+        color: white;
+    } 
+
+    .delete-btn:hover {
+        background: #c82333;
     }
     .read-btn {
         background: #0e3b6a;
@@ -348,24 +367,6 @@ h2 {
 
     .read-btn:hover {
         background: #0056b3;
-    }
-
-    .edit-btn {
-        background-color: #042452;
-        color: #fff;
-    }
-
-    .edit-btn:hover {
-        background: #e0a800;
-    }
-
-    .delete-btn {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .delete-btn:hover {
-        background: #c82333;
     }
      /* Empty State */
     .empty-blog {

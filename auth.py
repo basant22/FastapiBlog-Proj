@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import HTTPException, status, Depends
+from fastapi import HTTPException, status, Depends,Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from database import sessionlocal
@@ -96,6 +96,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 #         email: str = payload.get("sub")
 #         if email is None:
 #             return None
-#         return db.query(dbmodel.User).filter(dbmodel.User.email == email).first()
+#         return db.query(User).filter(User.email == email).first()
 #     except jwt.PyJWTError:
 #         return None
